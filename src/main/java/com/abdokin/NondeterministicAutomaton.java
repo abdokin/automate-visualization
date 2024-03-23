@@ -1,10 +1,10 @@
 package com.abdokin;
 
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+
 public class NondeterministicAutomaton {
     private final List<Map<String, Set<Integer>>> transitions = new ArrayList<>();
     private final Set<Integer> states = new HashSet<>();
@@ -21,6 +21,51 @@ public class NondeterministicAutomaton {
         return state < transitions.size() ? transitions.get(state) : null;
     }
 
+    private Set<Integer> getEpsilonTransitions(int state) {
+        Map<String, Set<Integer>> epsilonTransitions = getTransitions(state);
+        return epsilonTransitions != null ? epsilonTransitions.getOrDefault(state, Collections.emptySet())
+                : Collections.emptySet();
+    }
+
+    public Set<Integer> getSymbolTransitions(Set<Integer> states, String symbol) {
+        Set<Integer> res = new HashSet<>();
+        for (int state : states) {
+            res.addAll(getSymbolTransitions(state, symbol));
+        }
+        return res;
+    }
+
+    public Set<Integer> getSymbolTransitions(int state, String symbol) {
+        Set<Integer> visited = new HashSet<>();
+        Set<Integer> symbolTransitions = new HashSet<>();
+        Queue<Integer> statesToProcess = new LinkedList<>();
+
+        statesToProcess.add(state);
+
+        while (!statesToProcess.isEmpty()) {
+            int currentState = statesToProcess.poll();
+            if (!visited.contains(currentState)) {
+                visited.add(currentState);
+                var transitions = getTransitions(currentState);
+                if (transitions != null) {
+                    var nextStates = transitions.getOrDefault(symbol, Collections.emptySet());
+                    symbolTransitions.addAll(nextStates);
+                    for (int nextState : nextStates) {
+                        statesToProcess.add(nextState);
+                    }
+                    Set<Integer> epsilonTransitions = getEpsilonTransitions(currentState);
+                    for (int epsilonState : epsilonTransitions) {
+                        if (!visited.contains(epsilonState)) {
+                            statesToProcess.add(epsilonState);
+                        }
+                    }
+                }
+            }
+        }
+
+        return epsilonClosure(symbolTransitions);
+    }
+
     public boolean transitionExist(int fromState, String symbol, int toState) {
         try {
             Map<String, Set<Integer>> transitionMap = transitions.get(fromState);
@@ -33,6 +78,34 @@ public class NondeterministicAutomaton {
 
     public boolean isFinal(int state) {
         return finalStates.contains(state);
+    }
+
+    public Set<Integer> epsilonClosure(Set<Integer> states) {
+        Set<Integer> res = new HashSet<>();
+        for (int state : states) {
+            res.addAll(epsilonClosure(state));
+        }
+        return res;
+    }
+
+    public Set<Integer> epsilonClosure(int state) {
+        Set<Integer> visited = new HashSet<>();
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(state);
+        while (!stack.isEmpty()) {
+            int currentState = stack.pop();
+            visited.add(currentState);
+            Map<String, Set<Integer>> transitions = getTransitions(currentState);
+            if (transitions != null) {
+                Set<Integer> epsilonTransitions = transitions.getOrDefault("ε", Collections.emptySet());
+                for (int nextState : epsilonTransitions) {
+                    if (!visited.contains(nextState)) {
+                        stack.push(nextState);
+                    }
+                }
+            }
+        }
+        return visited;
     }
 
     public void addFinalState(int state) {
@@ -113,4 +186,5 @@ public class NondeterministicAutomaton {
     public Set<Integer> getFinalStates() {
         return finalStates;
     }
+
 }
