@@ -38,6 +38,7 @@ public class AutomateBuilder {
         int new_state = buildFromNode(repetitionNode.child(), state);
         afn.addTransition(new_state, "ε", current);
         afn.addTransition(current, "ε", ++new_state);
+        afn.addTransition(current-1, "ε",new_state );
         return new_state;
     }
 
