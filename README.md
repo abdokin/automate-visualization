@@ -46,14 +46,14 @@ Automate Visualization is a tool that facilitates the visualization of automata 
 5. Run The project:
 
    ```bash
-   java -jar target/automate-1.0.jar "a|(bc) *k"
+   java -jar target/automate-1.0.jar "ab|c*"
    ```
 
 6. View the generated visualization by opening the `afn.png` and `dfa.png` file. Use any image viewer on your system to open and inspect the automaton visualization.
 
 ## Example
 
-Below is an example of the generated visualization for the provided regex `a|(bc)*k`:
+Below is an example of the generated visualization for the provided regex `ab|c*`:
 
 ![Automaton AFN](afn.png)
 ![Automaton DFA](dfa.png)
