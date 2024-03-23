@@ -56,7 +56,7 @@ Automate Visualization is a tool that facilitates the visualization of automata 
 Below is an example of the generated visualization for the provided regex `a|(bc)*k`:
 
 ![Automaton AFN](afn.png)
-![Automaton DFA](afn.png)
+![Automaton DFA](dfa.png)
 
 
 ## License
