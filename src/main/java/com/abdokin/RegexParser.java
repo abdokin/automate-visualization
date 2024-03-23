@@ -68,6 +68,7 @@ public class RegexParser {
     }
 
     public RegexNode parse() throws Exception {
+        System.out.println("Parsing " + regex);
         List<RegexNode> nodes = new ArrayList<>();
         while (index < regex.length() && regex.charAt(index) != ')') {
             var lhs = parseTerm();
