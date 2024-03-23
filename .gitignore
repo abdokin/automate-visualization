@@ -1,3 +1,4 @@
 afn.dot
 dfa.dot
 target/*
+.vscode/settings.json
