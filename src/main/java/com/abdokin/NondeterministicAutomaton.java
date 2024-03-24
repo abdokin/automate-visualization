@@ -23,7 +23,7 @@ public class NondeterministicAutomaton {
 
     private Set<Integer> getEpsilonTransitions(int state) {
         Map<String, Set<Integer>> epsilonTransitions = getTransitions(state);
-        return epsilonTransitions != null ? epsilonTransitions.getOrDefault(state, Collections.emptySet())
+        return epsilonTransitions != null ? epsilonTransitions.getOrDefault("ε", Collections.emptySet())
                 : Collections.emptySet();
     }
 
@@ -49,17 +49,23 @@ public class NondeterministicAutomaton {
                 var transitions = getTransitions(currentState);
                 if (transitions != null) {
                     var nextStates = transitions.getOrDefault(symbol, Collections.emptySet());
-                    symbolTransitions.addAll(nextStates);
-                    for (int nextState : nextStates) {
-                        statesToProcess.add(nextState);
-                    }
-                    Set<Integer> epsilonTransitions = getEpsilonTransitions(currentState);
-                    for (int epsilonState : epsilonTransitions) {
-                        if (!visited.contains(epsilonState)) {
-                            statesToProcess.add(epsilonState);
+
+                    if (!nextStates.isEmpty()) {
+                        symbolTransitions.addAll(nextStates);
+                        statesToProcess.addAll(nextStates);
+                    } else {
+                        
+                        // Retrieve epsilon transitions for the current state
+                        Set<Integer> epsilonTransitions = getEpsilonTransitions(currentState);
+                        System.out.println(epsilonTransitions);
+                        for (int epsilonState : epsilonTransitions) {
+                            if (!visited.contains(epsilonState)) {
+                                statesToProcess.add(epsilonState);
+                            }
                         }
                     }
                 }
+
             }
         }
 
